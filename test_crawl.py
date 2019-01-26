@@ -19,3 +19,27 @@ def test_is_outbound_url():
     assert not crawl.is_outbound_url('test', website)
     assert not crawl.is_outbound_url('/test', website)
     assert not crawl.is_outbound_url('http://alanbi.com', website)
+
+
+def test_relative_to_absolute_url():
+    domain = 'http://test.com'
+
+    assert crawl.relative_to_absolute_url('http://test.com', domain) == 'http://test.com'
+    assert crawl.relative_to_absolute_url('https://test.com', domain) == 'https://test.com'
+    assert crawl.relative_to_absolute_url('/page', domain) == 'http://test.com/page'
+    assert crawl.relative_to_absolute_url('page', domain) == 'http://test.com/page'
+    assert crawl.relative_to_absolute_url('', domain) == 'http://test.com/'
+
+    domain += '/'
+
+    assert crawl.relative_to_absolute_url('page', domain) == 'http://test.com/page'
+    assert crawl.relative_to_absolute_url('/page', domain) == 'http://test.com//page'
+
+    url = 'http://test.com/page1'
+
+    assert crawl.relative_to_absolute_url('page2', url) == 'http://test.com/page1/page2'
+    assert crawl.relative_to_absolute_url('./page2', url) == 'http://test.com/page1/page2'
+    assert crawl.relative_to_absolute_url('../page2', url) == 'http://test.com/page2'
+
+
+

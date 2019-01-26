@@ -6,8 +6,20 @@ def is_http_url(url):
     return ':' not in url or url.startswith('http')
 
 
-def is_outbound_url(url, website):
-    return url.startswith('http') and website not in url
+def is_outbound_url(url, domain):
+    # TODO: check domain in url starting after the :// (need to then
+    # validate that domain contains the http beginning part)
+    return url.startswith('http') and domain not in url
+
+
+def relative_to_absolute_url(url, domain):
+    # TODO: needs to take into account things like ./ and ../
+    # domain may need to be renamed since it's the current url not just domain
+    if not url.startswith('http'):
+        optional_slash = '' if domain.endswith('/') or url.startswith('/') else '/'
+        return domain + optional_slash + url
+    else:
+        return url
 
 
 website = 'http://alanbi.com'
@@ -23,6 +35,6 @@ for link in links:
     if not is_http_url(url) or is_outbound_url(url, website):
         continue
 
-    if not url.startswith('http'):
-        url = website + url
+    url = relative_to_absolute_url(url, website)
+
     print(url)
