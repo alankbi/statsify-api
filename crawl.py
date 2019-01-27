@@ -1,25 +1,21 @@
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 
 
 def is_http_url(url):
-    return ':' not in url or url.startswith('http')
+    return url.startswith('http') or (':' not in url or url.startswith('.'))
 
 
 def is_outbound_url(url, domain):
-    # TODO: check domain in url starting after the :// (need to then
-    # validate that domain contains the http beginning part)
+    separator = '://'
+    if separator in domain:
+        domain = domain[domain.index(separator) + len(separator):]
     return url.startswith('http') and domain not in url
 
 
-def relative_to_absolute_url(url, domain):
-    # TODO: needs to take into account things like ./ and ../
-    # domain may need to be renamed since it's the current url not just domain
-    if not url.startswith('http'):
-        optional_slash = '' if domain.endswith('/') or url.startswith('/') else '/'
-        return domain + optional_slash + url
-    else:
-        return url
+def relative_to_absolute_url(url, current_url):
+    return urljoin(current_url, url)
 
 
 website = 'http://alanbi.com'
