@@ -1,48 +1,19 @@
-from visualizer import helpers
+from visualizer import crawl
+import responses
 
 
-def test_is_http_url():
-    assert helpers.is_http_url('http://test.com')
-    assert helpers.is_http_url('https://test.com')
-    assert helpers.is_http_url('test')
-    assert helpers.is_http_url('/test')
-    assert helpers.is_http_url('./test:colon')
-    assert not helpers.is_http_url('test:colon')
-    assert not helpers.is_http_url('tel:+1-000-000-0000')
-    assert not helpers.is_http_url('file://testing')
-    assert not helpers.is_http_url('mailto:email@email.com')
+@responses.activate
+def test_get_all_links():
+    responses.add(responses.GET, 'http://test.com',
+                  body='<div class="test"><a href="/test">hi</a></div>')
+    links = crawl.get_all_links('http://test.com')
+    assert len(links) == 1
 
 
-def test_is_outbound_url():
-    website = 'http://alanbi.com'
-
-    assert helpers.is_outbound_url('http://test.com', website)
-    assert helpers.is_outbound_url('https://test.com', website)
-    assert not helpers.is_outbound_url('test', website)
-    assert not helpers.is_outbound_url('/test', website)
-    assert not helpers.is_outbound_url('http://alanbi.com', website)
-    assert not helpers.is_outbound_url('https://alanbi.com', website)
-
-
-def test_relative_to_absolute_url():
-    domain = 'http://test.com'
-
-    assert helpers.relative_to_absolute_url('http://test.com', domain) == 'http://test.com'
-    assert helpers.relative_to_absolute_url('https://test.com', domain) == 'https://test.com'
-    assert helpers.relative_to_absolute_url('/page', domain) == 'http://test.com/page'
-    assert helpers.relative_to_absolute_url('page', domain) == 'http://test.com/page'
-    assert helpers.relative_to_absolute_url('', domain) == 'http://test.com'
-
-    domain += '/'
-
-    assert helpers.relative_to_absolute_url('page', domain) == 'http://test.com/page'
-    assert helpers.relative_to_absolute_url('/page/', domain) == 'http://test.com/page/'
-
-    url = 'http://test.com/page1/'
-
-    assert helpers.relative_to_absolute_url('page2', url) == 'http://test.com/page1/page2'
-    assert helpers.relative_to_absolute_url('./page2', url) == 'http://test.com/page1/page2'
-    assert helpers.relative_to_absolute_url('../page2', url) == 'http://test.com/page2'
-
-
-
+def test_filter_internal_links():
+    current_url = 'http://test.com'
+    links = ['http://test.com', 'https://test.com/test', 'http://wrong.com',
+             'mailto:test@test.com', 'test', '/test', '#', '']
+    result = ['http://test.com', 'https://test.com/test', 'http://test.com/test',
+              'http://test.com/test', 'http://test.com', 'http://test.com']
+    assert crawl.get_internal_links(links, current_url) == result
