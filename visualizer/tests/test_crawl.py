@@ -1,17 +1,31 @@
+from bs4 import BeautifulSoup
 from visualizer import crawl
 import responses
 
 
 @responses.activate
-def test_get_all_links():
+def test_get_html():
     responses.add(responses.GET, 'http://test.com',
                   body='<div class="test"><a href="/test">hi</a></div>')
 
-    links = crawl.get_all_links('http://test.com')
-    assert len(links) == 1
+    html = crawl.get_html('http://test.com')
+    assert isinstance(html, BeautifulSoup)
+    assert html.get_text() == 'hi'
 
-    links = crawl.get_all_links('test.com')
+    html = crawl.get_html('test.com')
+    assert isinstance(html, BeautifulSoup)
+    assert html.get_text() == 'hi'
+
+    html = crawl.get_html('http://badurl.com')
+    assert html is None
+
+
+def test_get_all_links():
+    html = BeautifulSoup('<a href="/test">hi</a>', 'html.parser')
+
+    links = crawl.get_all_links(html)
     assert len(links) == 1
+    assert links[0] == '/test'
 
 
 def test_filter_internal_links():

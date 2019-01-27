@@ -3,13 +3,18 @@ from bs4 import BeautifulSoup
 from visualizer import helpers
 
 
-def get_all_links(url):
+def get_html(url):
     if not url.startswith('http'):
         url = 'http://' + url
-    result = requests.get(url)
-    soup = BeautifulSoup(result.content, 'html.parser')
-    links = soup.find_all('a')
+    try:
+        result = requests.get(url)
+        return BeautifulSoup(result.content, 'html.parser')
+    except requests.exceptions.RequestException:
+        return None
 
+
+def get_all_links(html):
+    links = html.find_all('a')
     return [link['href'] for link in links]
 
 
@@ -22,11 +27,3 @@ def get_internal_links(links, current_url):
         internal_links.append(helpers.relative_to_absolute_url(link, current_url))
 
     return internal_links
-
-
-website = 'http://alanbi.com'
-all_links = get_all_links(website)
-internal_links = get_internal_links(all_links, website)
-print(internal_links)
-
-
