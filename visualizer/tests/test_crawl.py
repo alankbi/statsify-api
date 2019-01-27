@@ -6,7 +6,11 @@ import responses
 def test_get_all_links():
     responses.add(responses.GET, 'http://test.com',
                   body='<div class="test"><a href="/test">hi</a></div>')
+
     links = crawl.get_all_links('http://test.com')
+    assert len(links) == 1
+
+    links = crawl.get_all_links('test.com')
     assert len(links) == 1
 
 

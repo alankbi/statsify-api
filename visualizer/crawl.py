@@ -4,7 +4,8 @@ from visualizer import helpers
 
 
 def get_all_links(url):
-
+    if not url.startswith('http'):
+        url = 'http://' + url
     result = requests.get(url)
     soup = BeautifulSoup(result.content, 'html.parser')
     links = soup.find_all('a')
