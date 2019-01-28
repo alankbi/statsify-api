@@ -9,6 +9,8 @@ def is_outbound_url(url, domain):
     separator = '://'
     if separator in domain:
         domain = domain[domain.index(separator) + len(separator):]
+    if '/' in domain:
+        domain = domain[:domain.index('/')]
     return url.startswith('http') and domain not in url
 
 

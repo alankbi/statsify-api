@@ -36,6 +36,13 @@ def test_filter_for_internal_links():
               'http://test.com/test', 'http://test.com', 'http://test.com']
     assert crawl.filter_for_internal_links(links, current_url) == result
 
+    current_url = 'http://test.com/test'
+    links = ['http://test.com', 'https://test.com/test', 'http://wrong.com',
+             'mailto:test@test.com', 'test', '/test', '#', '']
+    result = ['http://test.com', 'https://test.com/test', 'http://test.com/test',
+              'http://test.com/test', 'http://test.com/test', 'http://test.com/test']
+    assert crawl.filter_for_internal_links(links, current_url) == result
+
 
 def test_get_internal_links():
     html = BeautifulSoup('<a href="/test">hi</a><a href="http://wrong.com">hi</a>', 'html.parser')

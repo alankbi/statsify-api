@@ -25,6 +25,14 @@ def test_is_outbound_url():
     assert not helpers.is_outbound_url('#', website)
     assert not helpers.is_outbound_url('', website)
 
+    website = 'http://alanbi.com/test'
+
+    assert helpers.is_outbound_url('http://test.com', website)
+    assert not helpers.is_outbound_url('https://alanbi.com', website)
+    assert not helpers.is_outbound_url('https://alanbi.com/testing', website)
+    assert not helpers.is_outbound_url('/test', website)
+    assert not helpers.is_outbound_url('', website)
+
 
 def test_relative_to_absolute_url():
     domain = 'http://test.com'
