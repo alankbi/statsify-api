@@ -4,7 +4,7 @@ import responses
 
 
 @responses.activate
-def test_get_html():
+def test_get_html_success():
     responses.add(responses.GET, 'http://test.com', content_type='text/html',
                   body='<div class="test"><a href="/test">hi</a></div>')
 
@@ -15,6 +15,10 @@ def test_get_html():
     html = crawl.get_html('test.com')
     assert isinstance(html, BeautifulSoup)
     assert html.get_text() == 'hi'
+
+
+def test_get_html_failure():
+    responses.add(responses.GET, 'http://badurl.com', body=Exception)
 
     html = crawl.get_html('http://badurl.com')
     assert html is None
@@ -36,6 +40,8 @@ def test_filter_for_internal_links():
               'http://test.com/test', 'http://test.com', 'http://test.com']
     assert crawl.filter_for_internal_links(links, current_url) == result
 
+
+def test_filter_for_internal_links_from_subfolder():
     current_url = 'http://test.com/test'
     links = ['http://test.com', 'https://test.com/test', 'http://wrong.com',
              'mailto:test@test.com', 'test', '/test', '#', '']
