@@ -1,4 +1,5 @@
 import requests
+from requests.exceptions import RequestException
 from bs4 import BeautifulSoup
 from visualizer import helpers
 
@@ -8,7 +9,7 @@ def get_html(url):
         url = 'http://' + url
     try:
         result = requests.get(url)
-    except requests.exceptions.RequestException:
+    except RequestException:
         return None
 
     if 'text/html' in result.headers['content-type']:

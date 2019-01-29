@@ -3,6 +3,14 @@ import responses
 
 
 @responses.activate
+def test_page_with_bad_url():
+    responses.add(responses.GET, 'http://badurl.com', body=Exception)
+
+    page = Page('http://test.com')
+    assert page.html is None
+
+
+@responses.activate
 def test_page_with_no_subpages():
     responses.add(responses.GET, 'http://test.com', content_type='text/html',
                   body='<div class="test"><a href="/test">hi</a></div>')
