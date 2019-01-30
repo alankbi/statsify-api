@@ -51,5 +51,3 @@ print(root_page)
 keywords = root_page.key_phrases
 print(root_page.text)
 print(keywords)
-
-

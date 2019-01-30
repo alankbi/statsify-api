@@ -56,9 +56,24 @@ def test_page_with_subpages_two_deep():
     assert page.subpages[key][0].subpages[key][0].subpages is None
 
 
+@responses.activate
 def test_strip_scripts_from_html():
-    pass
+    responses.add(responses.GET, 'http://test.com', content_type='text/html',
+                  body='<p>Hello</p><script>console.log("test");</script><p>Hi</p>')
+
+    page = Page('http://test.com')
+    assert page.html is not None
+    assert page.text == 'Hello\nHi'
 
 
+@responses.activate
 def test_get_key_phrases():
-    pass
+    responses.add(responses.GET, 'http://test.com', content_type='text/html',
+                  body='<p>crawl and is crawl the helpers or website</p>')
+
+    page = Page('http://test.com')
+    assert page.html is not None
+    key_phrases = page.get_key_phrases()
+    assert key_phrases is not None
+    assert len(key_phrases) == 3
+    assert all(word in key_phrases for word in ['crawl', 'helpers', 'website'])
