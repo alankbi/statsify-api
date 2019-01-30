@@ -54,3 +54,11 @@ def test_page_with_subpages_two_deep():
     assert page.subpages[key][0].subpages is not None
     assert len(page.subpages[key][0].subpages) == 1
     assert page.subpages[key][0].subpages[key][0].subpages is None
+
+
+def test_strip_scripts_from_html():
+    pass
+
+
+def test_get_key_phrases():
+    pass

@@ -2,3 +2,4 @@ beautifulsoup4
 pytest
 requests
 responses
+rake-nltk
