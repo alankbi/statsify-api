@@ -27,11 +27,19 @@ def test_page_with_subpages():
     responses.add(responses.GET, 'http://test.com', content_type='text/html',
                   body='<a href="">hi</a><a href="/test">hi1</a>'
                        '<a href="/test2">hi2</a><a href="/test">hi3</a>')
+    responses.add(responses.GET, 'http://test.com/test', content_type='text/html',
+                  body='<a href="/test">hi</a>')
+    # For some reason body=Exception throws a TypeError in responses.py, so for
+    # now body='', which produces the same result (crawl.get_html returns None)
+    responses.add(responses.GET, 'http://test.com/test2', body='')
 
     page = Page('http://test.com', generate_subpages=True)
     assert page.subpages is not None
-    assert len(page.subpages) == 4
-    assert page.subpages[0].subpages is None
+    print(page.subpages)
+    assert len(page.subpages) == 2
+    assert page.subpages['http://test.com'][1] == 1
+    assert page.subpages['http://test.com/test'][1] == 2
+    assert page.subpages['http://test.com'][0].subpages is None
 
 
 @responses.activate
@@ -40,8 +48,9 @@ def test_page_with_subpages_two_deep():
                   body='<div class="test"><a href="/test">hi</a></div>')
 
     page = Page('http://test.com/test', generate_subpages=True, generate_depth=2)
+    key = 'http://test.com/test'
     assert page.subpages is not None
     assert len(page.subpages) == 1
-    assert page.subpages[0].subpages is not None
-    assert len(page.subpages[0].subpages) == 1
-    assert page.subpages[0].subpages[0].subpages is None
+    assert page.subpages[key][0].subpages is not None
+    assert len(page.subpages[key][0].subpages) == 1
+    assert page.subpages[key][0].subpages[key][0].subpages is None
