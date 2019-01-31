@@ -77,3 +77,13 @@ def test_get_key_phrases():
     assert key_phrases is not None
     assert len(key_phrases) == 3
     assert all(word in key_phrases for word in ['crawl', 'helpers', 'website'])
+
+
+@responses.activate
+def test_get_word_count():
+    responses.add(responses.GET, 'http://test.com', content_type='text/html',
+                  body='<p>word1 word2 word3  word4</p><br><p>word5  6</p>')
+
+    page = Page('http://test.com')
+    assert page.html is not None
+    assert page.word_count == 6

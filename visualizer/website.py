@@ -12,17 +12,27 @@ class Page:
             self.text = self.html.get_text('\n', strip=True)
             self.key_phrases = self.get_key_phrases()
 
-        if not generate_subpages or generate_depth <= 0 or self.html is None:
-            self.subpages = None
-        else:
-            self.subpages = {}
-            for link in crawl.get_internal_links(self.html, url):
-                if link not in self.subpages:
-                    subpage = Page(link, generate_subpages, generate_depth - 1)
-                    if subpage.html is not None:
-                        self.subpages[link] = (subpage, 1)
-                else:
-                    self.subpages[link] = (self.subpages[link][0], self.subpages[link][1] + 1)
+            self.word_count = self.get_word_count()
+
+            self.internal_links = crawl.get_internal_links(self.html, url)
+            # self.outbound_links = crawl.get_outbound_links(self.html, url)
+
+            if not generate_subpages or generate_depth <= 0:
+                self.subpages = None
+            else:
+                self.subpages = self.generate_subpages(generate_depth - 1)
+
+    def generate_subpages(self, generate_depth):
+        subpages = {}
+        for link in self.internal_links:
+            if link not in subpages:
+                subpage = Page(link, True, generate_depth)
+                if subpage.html is not None:
+                    subpages[link] = (subpage, 1)
+            else:
+                subpages[link] = (subpages[link][0], subpages[link][1] + 1)
+
+        return subpages
 
     def strip_scripts_from_html(self):
         for script in self.html(['script', 'style']):
@@ -32,6 +42,9 @@ class Page:
         r = Rake()
         r.extract_keywords_from_text(self.text)
         return r.get_ranked_phrases()
+
+    def get_word_count(self):
+        return len(self.text.split())
 
     def __str__(self):
         if self.html is None:
@@ -51,3 +64,4 @@ print(root_page)
 keywords = root_page.key_phrases
 print(root_page.text)
 print(keywords)
+print(root_page.word_count)
