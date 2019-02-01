@@ -76,7 +76,7 @@ def test_get_key_phrases():
     key_phrases = page.get_key_phrases()
     assert key_phrases is not None
     assert len(key_phrases) == 3
-    assert all(word in key_phrases for word in ['crawl', 'helpers', 'website'])
+    assert all(word in key_phrases for word in ['Crawl', 'Helpers', 'Website'])
 
 
 @responses.activate
