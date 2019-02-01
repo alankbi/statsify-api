@@ -10,7 +10,7 @@ class Page:
         if self.html is not None:
             self.strip_scripts_from_html()
             self.text = self.html.get_text('\n', strip=True)
-            self.key_phrases = self.get_key_phrases()
+            self.key_phrases = self.get_key_phrases(max_length=3)
 
             self.word_count = self.get_word_count()
 
@@ -37,10 +37,16 @@ class Page:
         for script in self.html(['script', 'style']):
             script.decompose()
 
-    def get_key_phrases(self):
-        r = Rake()
+    def get_key_phrases(self, max_length=None):
+        if max_length is not None:
+            r = Rake(max_length=max_length)
+        else:
+            r = Rake()
         r.extract_keywords_from_text(self.text)
-        return r.get_ranked_phrases()
+        return self.filter_key_phrases(r.get_ranked_phrases())
+
+    def filter_key_phrases(self, phrases):
+        return [phrase.title() for phrase in phrases[:3]]
 
     def get_word_count(self):
         return len(self.text.split())
@@ -60,9 +66,11 @@ class Page:
 website = 'http://alanbi.com'
 root_page = Page(website)
 print(root_page)
-keywords = root_page.key_phrases
 print(root_page.text)
-print(keywords)
+
+print(root_page.key_phrases)
+
 print(root_page.word_count)
+
 print(root_page.internal_links)
 print(root_page.outbound_links)

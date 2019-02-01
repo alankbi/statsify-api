@@ -87,3 +87,10 @@ def test_get_word_count():
     page = Page('http://test.com')
     assert page.html is not None
     assert page.word_count == 6
+
+
+def test_filter_key_phrases():
+    phrases = ['test', 'test this2', '3test', 'test4']
+    result = Page('').filter_key_phrases(phrases)
+    assert len(result) == 3
+    assert result == ['Test', 'Test This2', '3Test']
