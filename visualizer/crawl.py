@@ -34,6 +34,12 @@ def filter_for_internal_links(links, current_url):
     return internal_links
 
 
-def get_internal_links(html, current_url):
+def filter_for_outbound_links(links, current_url):
+    return [link for link in links if not helpers.is_http_url(link) or
+            helpers.is_outbound_url(link, current_url)]
+
+
+def get_internal_and_outbound_links(html, current_url):
     links = get_all_links(html)
-    return filter_for_internal_links(links, current_url)
+    return (filter_for_internal_links(links, current_url),
+            filter_for_outbound_links(links, current_url))

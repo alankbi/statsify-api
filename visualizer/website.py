@@ -14,8 +14,7 @@ class Page:
 
             self.word_count = self.get_word_count()
 
-            self.internal_links = crawl.get_internal_links(self.html, url)
-            # self.outbound_links = crawl.get_outbound_links(self.html, url)
+            self.internal_links, self.outbound_links = crawl.get_internal_and_outbound_links(self.html, url)
 
             if not generate_subpages or generate_depth <= 0:
                 self.subpages = None
@@ -65,3 +64,5 @@ keywords = root_page.key_phrases
 print(root_page.text)
 print(keywords)
 print(root_page.word_count)
+print(root_page.internal_links)
+print(root_page.outbound_links)

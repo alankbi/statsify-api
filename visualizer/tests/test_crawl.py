@@ -50,10 +50,21 @@ def test_filter_for_internal_links_from_subfolder():
     assert crawl.filter_for_internal_links(links, current_url) == result
 
 
-def test_get_internal_links():
-    html = BeautifulSoup('<a href="/test">hi</a><a href="http://wrong.com">hi</a>', 'html.parser')
+def test_filter_for_outbound_links():
+    current_url = 'http://test.com/test'
+    links = ['http://test.com', 'https://test.com/test', 'http://outbound.com',
+             'mailto:test@test.com', '/test', '', 'tel:+1-555-555-5555']
+    result = ['http://outbound.com', 'mailto:test@test.com', 'tel:+1-555-555-5555']
+    assert crawl.filter_for_outbound_links(links, current_url) == result
+
+
+def test_get_internal_and_outbound_links():
+    html = BeautifulSoup('<a href="/test">hi</a><a href="http://outbound.com">hi</a>', 'html.parser')
     current_url = 'http://test.com'
 
-    internal_links = crawl.get_internal_links(html, current_url)
+    internal_links, outbound_links = crawl.get_internal_and_outbound_links(html, current_url)
     assert len(internal_links) == 1
     assert internal_links[0] == 'http://test.com/test'
+
+    assert len(outbound_links) == 1
+    assert outbound_links[0] == 'http://outbound.com'
