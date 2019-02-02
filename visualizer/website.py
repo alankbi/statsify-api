@@ -1,5 +1,5 @@
 from visualizer import crawl
-from rake_nltk import Rake
+from visualizer import helpers
 
 
 class Page:
@@ -8,11 +8,11 @@ class Page:
         self.html = crawl.get_html(url)
 
         if self.html is not None:
-            self.strip_scripts_from_html()
+            helpers.strip_scripts_from_html(self.html)
             self.text = self.html.get_text('\n', strip=True)
-            self.key_phrases = self.get_key_phrases(max_length=3)
+            self.key_phrases = helpers.get_key_phrases_from_text(self.text, max_length=3)
 
-            self.word_count = self.get_word_count()
+            self.word_count = helpers.get_word_count_from_text(self.text)
 
             self.internal_links, self.outbound_links = crawl.get_internal_and_outbound_links(self.html, url)
 
@@ -32,24 +32,6 @@ class Page:
                 subpages[link] = (subpages[link][0], subpages[link][1] + 1)
 
         return subpages
-
-    def strip_scripts_from_html(self):
-        for script in self.html(['script', 'style']):
-            script.decompose()
-
-    def get_key_phrases(self, max_length=None):
-        if max_length is not None:
-            r = Rake(max_length=max_length)
-        else:
-            r = Rake()
-        r.extract_keywords_from_text(self.text)
-        return self.filter_key_phrases(r.get_ranked_phrases())
-
-    def filter_key_phrases(self, phrases):
-        return [phrase.title() for phrase in phrases[:3]]
-
-    def get_word_count(self):
-        return len(self.text.split())
 
     def __str__(self):
         if self.html is None:
@@ -74,3 +56,15 @@ print(root_page.word_count)
 
 print(root_page.internal_links)
 print(root_page.outbound_links)
+
+
+class Website:
+    def __init__(self, root_page):
+        self.root_page = root_page
+        if root_page is not None:
+            self.pages = None   # { url: (Page, frequency) }
+            self.text = None    # Large string
+            self.key_phrases = None
+            self.word_count = None
+
+            self.outbound_links = None

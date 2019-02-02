@@ -1,4 +1,5 @@
 from visualizer import helpers
+from bs4 import BeautifulSoup
 
 
 def test_is_http_url_returns_true():
@@ -67,4 +68,31 @@ def test_relative_to_absolute_url_from_subfolder():
     assert helpers.relative_to_absolute_url('../page2', url) == 'http://test.com/page2'
 
 
+def test_strip_scripts_from_html():
+    html = BeautifulSoup('<p>Hello</p><script>console.log("test");</script><p>Hi</p>', 'html.parser')
 
+    helpers.strip_scripts_from_html(html)
+    assert html.get_text('\n', strip=True) == 'Hello\nHi'
+
+
+def test_filter_key_phrases():
+    phrases = ['test', 'test this2', '3test', 'test4']
+    result = helpers.filter_key_phrases(phrases)
+    assert len(result) == 3
+    assert result == ['Test', 'Test This2', '3Test']
+
+
+def test_get_key_phrases_from_text():
+    html = BeautifulSoup('<p>crawl and is crawl the helpers or website</p>', 'html.parser')
+
+    key_phrases = helpers.get_key_phrases_from_text(html.get_text('\n', strip=True))
+    assert key_phrases is not None
+    assert len(key_phrases) == 3
+    assert all(word in key_phrases for word in ['Crawl', 'Helpers', 'Website'])
+
+
+def test_get_word_count_from_text():
+    html = BeautifulSoup('<p>word1 word2 word3  word4</p><br><p>word5  6</p>', 'html.parser')
+
+    word_count = helpers.get_word_count_from_text(html.get_text('\n', strip=True))
+    assert word_count == 6

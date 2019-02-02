@@ -1,4 +1,5 @@
 from urllib.parse import urljoin
+from rake_nltk import Rake
 
 
 def is_http_url(url):
@@ -16,3 +17,25 @@ def is_outbound_url(url, domain):
 
 def relative_to_absolute_url(url, current_url):
     return urljoin(current_url, url)
+
+
+def strip_scripts_from_html(html):
+    for script in html(['script', 'style']):
+        script.decompose()
+
+
+def filter_key_phrases(phrases):
+    return [phrase.title() for phrase in phrases[:3]]
+
+
+def get_key_phrases_from_text(text, max_length=None):
+    if max_length is not None:
+        r = Rake(max_length=max_length)
+    else:
+        r = Rake()
+    r.extract_keywords_from_text(text)
+    return filter_key_phrases(r.get_ranked_phrases())
+
+
+def get_word_count_from_text(text):
+    return len(text.split())
