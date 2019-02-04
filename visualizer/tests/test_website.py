@@ -9,8 +9,8 @@ import pytest
 def website():
     """
     pages: {
-             'http://test.com': (<Page object>, 2),
-             'http://test.com/page1': (<Page object>, 5),
+             'http://test.com/': (<Page object>, 2),
+             'http://test.com/page1': (<Page object>, 4),
              'http://test.com/page2': (<Page object>, 2),
              'http://test.com/page3': (<Page object>, 1),
            }
@@ -21,10 +21,10 @@ def website():
     key_phrases: Collection of numbers 1 - 12
     """
 
-    urls = ['http://test.com', 'http://test.com/page1',
+    urls = ['http://test.com/', 'http://test.com/page1',
             'http://test.com/page2', 'http://test.com/page3']
-    bodies = ['<a href=""></a><a href="/page1"></a><a href="/page2"></a><p>1 2 3.</p>',
-              '<a href=""></a><a href="/page1"></a><a href="/page2"></a><p>4 5</p>',
+    bodies = ['<a href="/"></a><a href="/page1"></a><a href="/page2"></a><p>1 2 3.</p>',
+              '<a href="/"></a><a href="/page1"></a><a href="/page2"></a><p>4 5</p>',
               '<a href="/page3"></a><a href="http://out.com"></a><a href="mailto:out@out.com"></a>',
               '<a href="/page1"></a><a href="/page1"></a><p>6 7 8. 9 10 11. 12.</p>']
 
@@ -33,17 +33,18 @@ def website():
     responses.add(responses.GET, urls[2], content_type='text/html', body=bodies[2])
     responses.add(responses.GET, urls[3], content_type='text/html', body=bodies[3])
 
-    root_page = Page(urls[0], generate_subpages=True, generate_depth=3)
+    root_page = Page(urls[0], generate_subpages=True, generate_depth=4)
     return Website(root_page)
 
 
 def test_website_pages(website):
-    urls = ['http://test.com', 'http://test.com/page1',
+    urls = ['http://test.com/', 'http://test.com/page1',
             'http://test.com/page2', 'http://test.com/page3']
 
     assert len(website.pages) == 4
+    print(website.pages)
     assert urls[0] in website.pages and website.pages[urls[0]][1] == 2
-    assert urls[1] in website.pages and website.pages[urls[1]][1] == 5
+    assert urls[1] in website.pages and website.pages[urls[1]][1] == 4
     assert urls[2] in website.pages and website.pages[urls[2]][1] == 2
     assert urls[3] in website.pages and website.pages[urls[3]][1] == 1
 

@@ -1,11 +1,13 @@
 from visualizer import crawl
 from visualizer import helpers
+from copy import deepcopy
 
 
 class Page:
-    def __init__(self, url, generate_subpages=False, generate_depth=1):
+    def __init__(self, url, generate_subpages=False, generate_depth=1, page_store={}):
         self.url = url
         self.html = crawl.get_html(url)
+        page_store[self.url] = self
 
         if self.html is not None:
             helpers.strip_scripts_from_html(self.html)
@@ -19,13 +21,17 @@ class Page:
             if not generate_subpages or generate_depth <= 0:
                 self.subpages = None
             else:
-                self.subpages = self.generate_subpages(generate_depth - 1)
+                self.subpages = self.generate_subpages(generate_depth - 1, page_store)
 
-    def generate_subpages(self, generate_depth):
+    def generate_subpages(self, generate_depth, page_store):
         subpages = {}
         for link in self.internal_links:
             if link not in subpages:
-                subpage = Page(link, True, generate_depth)
+                if link not in page_store:
+                    subpage = Page(link, True, generate_depth, page_store=page_store)
+                else:
+                    subpage = page_store[link]
+
                 if subpage.html is not None:
                     subpages[link] = (subpage, 1)
             else:
@@ -47,7 +53,7 @@ class Page:
 
 def main():
     website = 'http://alanbi.com'
-    root_page = Page(website)
+    root_page = Page(website, True, 50)
     print(root_page)
     print(root_page.text)
 

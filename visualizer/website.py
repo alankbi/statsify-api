@@ -6,7 +6,7 @@ class Website:
     def __init__(self, root_page):
         self.root_page = root_page
         if root_page.html is not None:
-            self.pages = {root_page.url: (root_page, 1)}
+            self.pages = {root_page.url: (root_page, 0)}
             self.text = ''
             self.total_word_count = 0
 

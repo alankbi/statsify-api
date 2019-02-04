@@ -39,7 +39,8 @@ def test_page_with_subpages():
     assert len(page.subpages) == 2
     assert page.subpages['http://test.com'][1] == 1
     assert page.subpages['http://test.com/test'][1] == 2
-    assert page.subpages['http://test.com'][0].subpages is None
+    assert page.subpages['http://test.com'][0].subpages is page.subpages
+    assert page.subpages['http://test.com/test'][0].subpages is None
 
 
 @responses.activate
@@ -53,4 +54,4 @@ def test_page_with_subpages_two_deep():
     assert len(page.subpages) == 1
     assert page.subpages[key][0].subpages is not None
     assert len(page.subpages[key][0].subpages) == 1
-    assert page.subpages[key][0].subpages[key][0].subpages is None
+    assert page.subpages[key][0].subpages[key][0].subpages is page.subpages
