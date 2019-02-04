@@ -5,10 +5,10 @@ from visualizer import helpers
 class Website:
     def __init__(self, root_page):
         self.root_page = root_page
-        if root_page is not None:
+        if root_page.html is not None:
             self.pages = {root_page.url: (root_page, 1)}
-            self.text = root_page.text
-            self.total_word_count = root_page.word_count
+            self.text = ''
+            self.total_word_count = 0
 
             self.outbound_links = set(root_page.outbound_links)
 
@@ -23,7 +23,7 @@ class Website:
         while remaining_pages:
             page = remaining_pages.pop()
 
-            self.text += page.text
+            self.text += page.text + '\n'
             self.total_word_count += page.word_count
             self.outbound_links.update(page.outbound_links)
 
