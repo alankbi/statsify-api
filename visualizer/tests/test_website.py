@@ -84,7 +84,7 @@ def test_website_no_subpages():
 
     website = Website(Page('http://test.com'))
     assert len(website.pages) == 1
-    assert 'http://test.com' in website.pages and website.pages['http://test.com'][1] == 1
+    assert 'http://test.com' in website.pages and website.pages['http://test.com'][1] == 0
     assert website.text == '1 2 3\n'
     assert website.total_word_count == 3
     assert website.average_word_count == 3
