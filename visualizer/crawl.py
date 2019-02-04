@@ -19,7 +19,7 @@ def get_html(url):
 
 
 def get_all_links(html):
-    links = html.find_all('a')
+    links = html.find_all('a', href=True)
     return [link['href'] for link in links]
 
 

@@ -1,5 +1,5 @@
 from visualizer.website import Website
-from visualizer.page import Page
+from visualizer.page import Page, PageNode
 import responses
 import pytest
 
@@ -33,8 +33,8 @@ def website():
     responses.add(responses.GET, urls[2], content_type='text/html', body=bodies[2])
     responses.add(responses.GET, urls[3], content_type='text/html', body=bodies[3])
 
-    root_page = Page(urls[0], generate_subpages=True, generate_depth=4)
-    return Website(root_page)
+    root = PageNode(Page(urls[0]), 3)
+    return Website(root)
 
 
 def test_website_pages(website):
@@ -72,9 +72,9 @@ def test_website_key_phrases(website):
 def test_website_root_page_is_none():
     responses.add(responses.GET, 'http://test.com', body='')
 
-    website = Website(Page('http://test.com', generate_subpages=True))
-    assert website.root_page.html is None
-    assert not hasattr(website.root_page, 'pages')
+    website = Website(PageNode(Page('http://test.com'), 1))
+    assert website.root.page.html is None
+    assert not hasattr(website, 'pages')
 
 
 @responses.activate
@@ -82,7 +82,7 @@ def test_website_no_subpages():
     responses.add(responses.GET, 'http://test.com', content_type='text/html',
                   body='<a href=""></a><a href="/test"></a><a href="http://out.com"></a><p>1 2 3</p>')
 
-    website = Website(Page('http://test.com'))
+    website = Website(PageNode(Page('http://test.com')))
     assert len(website.pages) == 1
     assert 'http://test.com' in website.pages and website.pages['http://test.com'][1] == 0
     assert website.text == '1 2 3\n'

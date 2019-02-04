@@ -17,15 +17,16 @@ def test_get_html_success():
     assert html.get_text() == 'hi'
 
 
+@responses.activate
 def test_get_html_failure():
-    responses.add(responses.GET, 'http://badurl.com', body=Exception)
+    responses.add(responses.GET, 'http://badurl.com', body='')
 
     html = crawl.get_html('http://badurl.com')
     assert html is None
 
 
 def test_get_all_links():
-    html = BeautifulSoup('<a href="/test">hi</a>', 'html.parser')
+    html = BeautifulSoup('<a href="/test">hi</a><a class="no-href">hi</a>', 'html.parser')
 
     links = crawl.get_all_links(html)
     assert len(links) == 1

@@ -1,16 +1,17 @@
-from visualizer.page import Page
+from visualizer.page import Page, PageNode
 from visualizer import helpers
 
 
 class Website:
-    def __init__(self, root_page):
-        self.root_page = root_page
-        if root_page.html is not None:
-            self.pages = {root_page.url: (root_page, 0)}
+    def __init__(self, root):
+        self.root = root
+
+        if self.root.page.html is not None:
+            self.pages = {self.root.page.url: (self.root.page, 0)}
             self.text = ''
             self.total_word_count = 0
 
-            self.outbound_links = set(root_page.outbound_links)
+            self.outbound_links = set(self.root.page.outbound_links)
 
             self.traverse_all_pages()
 
@@ -18,26 +19,28 @@ class Website:
             self.key_phrases = helpers.get_key_phrases_from_text(self.text, max_length=3)
 
     def traverse_all_pages(self):
-        remaining_pages = [self.root_page]
+        remaining_pages = [self.root]
 
         while remaining_pages:
-            page = remaining_pages.pop()
+            page_node = remaining_pages.pop()
+            page = page_node.page
 
             self.text += page.text + '\n'
             self.total_word_count += page.word_count
             self.outbound_links.update(page.outbound_links)
 
-            if page.subpages is not None:
-                for link in page.subpages:
+            if page_node.subpages is not None:
+                for link in page_node.subpages:
                     if link in self.pages:
-                        self.pages[link] = (self.pages[link][0], self.pages[link][1] + page.subpages[link][1])
+                        self.pages[link] = (self.pages[link][0],
+                                            self.pages[link][1] + page_node.subpages[link][1])
                     else:
-                        self.pages[link] = (page.subpages[link][0], page.subpages[link][1])
-                        remaining_pages.append(page.subpages[link][0])
+                        self.pages[link] = (page_node.subpages[link][0].page, page_node.subpages[link][1])
+                        remaining_pages.append(page_node.subpages[link][0])
 
 
 def main():
-    website = Website(Page('http://alanbi.com', generate_subpages=True))
+    website = Website(PageNode(Page('http://alanbi.com'), 3))
     print(website.pages)
     print(website.text)
     print(website.total_word_count)

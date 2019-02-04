@@ -1,13 +1,11 @@
 from visualizer import crawl
 from visualizer import helpers
-from copy import deepcopy
 
 
 class Page:
-    def __init__(self, url, generate_subpages=False, generate_depth=1, page_store={}):
+    def __init__(self, url):
         self.url = url
         self.html = crawl.get_html(url)
-        page_store[self.url] = self
 
         if self.html is not None:
             helpers.strip_scripts_from_html(self.html)
@@ -18,51 +16,56 @@ class Page:
 
             self.internal_links, self.outbound_links = crawl.get_internal_and_outbound_links(self.html, url)
 
-            if not generate_subpages or generate_depth <= 0:
-                self.subpages = None
-            else:
-                self.subpages = self.generate_subpages(generate_depth - 1, page_store)
+    def __str__(self):
+        if self.html is None:
+            return ''
+        return self.html.prettify()
+
+
+class PageNode:
+    def __init__(self, page, generate_depth=0, page_store={}):
+        self.page = page
+        if generate_depth <= 0 or self.page.html is None:
+            self.subpages = None
+        else:
+            self.subpages = self.generate_subpages(generate_depth - 1, page_store)
 
     def generate_subpages(self, generate_depth, page_store):
         subpages = {}
-        for link in self.internal_links:
+        for link in self.page.internal_links:
             if link not in subpages:
                 if link not in page_store:
-                    subpage = Page(link, True, generate_depth, page_store=page_store)
-                else:
-                    subpage = page_store[link]
+                    page = Page(link)
+                    page_store[link] = page
 
-                if subpage.html is not None:
+                if page_store[link].html is not None:
+                    subpage = PageNode(page_store[link], generate_depth, page_store)
                     subpages[link] = (subpage, 1)
+
             else:
                 subpages[link] = (subpages[link][0], subpages[link][1] + 1)
 
         return subpages
 
     def __str__(self):
-        if self.html is None:
-            return ''
-        return self.html.prettify()
-
-    def __hash__(self):
-        return hash(self.url)
-
-    def __eq__(self, other):
-        return self.url == other.url
+        return self.page.url + '\n' + str(self.subpages)
 
 
 def main():
     website = 'http://alanbi.com'
-    root_page = Page(website, True, 50)
-    print(root_page)
-    print(root_page.text)
+    page_node = PageNode(Page(website), 1)
+    print(page_node)
 
-    print(root_page.key_phrases)
+    page = page_node.page
+    print(page)
+    print(page.text)
 
-    print(root_page.word_count)
+    print(page.key_phrases)
 
-    print(root_page.internal_links)
-    print(root_page.outbound_links)
+    print(page.word_count)
+
+    print(page.internal_links)
+    print(page.outbound_links)
 
 
 if __name__ == '__main__':
