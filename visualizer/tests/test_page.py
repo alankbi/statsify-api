@@ -51,6 +51,4 @@ def test_page_node_with_subpages_two_deep():
     key = 'http://test.com/test'
     assert page.subpages is not None
     assert len(page.subpages) == 1
-    assert page.subpages[key][0].subpages is not None
-    assert len(page.subpages[key][0].subpages) == 1
-    assert page.subpages[key][0].subpages[key][0].subpages is None
+    assert page.subpages[key][0].subpages is None

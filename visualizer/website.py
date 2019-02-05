@@ -47,6 +47,7 @@ def main():
     print(website.average_word_count)
     print(website.outbound_links)
     print(website.key_phrases)
+    print(len(website.pages))
 
 
 if __name__ == '__main__':

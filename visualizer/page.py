@@ -19,7 +19,7 @@ class Page:
     def __str__(self):
         if self.html is None:
             return ''
-        return self.html.prettify()
+        return self.url
 
 
 class PageNode:
@@ -28,9 +28,26 @@ class PageNode:
         if generate_depth <= 0 or self.page.html is None:
             self.subpages = None
         else:
-            self.subpages = self.generate_subpages(generate_depth - 1, page_store)
+            page_store[page.url] = page
+            self.generate_all_subpages(generate_depth, page_store)
 
-    def generate_subpages(self, generate_depth, page_store):
+    def generate_all_subpages(self, generate_depth, page_store):
+        finished = set()    # tracks if this page's subpages have already been generated previously
+        pages = [self]
+        next_pages = []     # all pages at the next depth to generate next
+        for i in range(generate_depth):
+            for page_node in pages:
+                if page_node.page.url not in finished:
+                    page_node.subpages = page_node.generate_subpages(page_store)
+                    finished.add(page_node.page.url)
+                    next_pages.extend(page_node.subpages[link][0] for link in page_node.subpages.keys())
+                else:
+                    page_node.subpages = None
+
+            pages = next_pages
+            next_pages = []
+
+    def generate_subpages(self, page_store):
         subpages = {}
         for link in self.page.internal_links:
             if link not in subpages:
@@ -39,7 +56,7 @@ class PageNode:
                     page_store[link] = page
 
                 if page_store[link].html is not None:
-                    subpage = PageNode(page_store[link], generate_depth, page_store)
+                    subpage = PageNode(page_store[link], page_store=page_store)
                     subpages[link] = (subpage, 1)
 
             else:
