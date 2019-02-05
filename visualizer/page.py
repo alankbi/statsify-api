@@ -5,6 +5,7 @@ from visualizer import helpers
 class Page:
     def __init__(self, url, rp=None):
         self.url = url
+        self.rp = rp
         if rp is not None and not rp.can_fetch('*', url):
             self.html = None
         else:
@@ -55,7 +56,7 @@ class PageNode:
         for link in self.page.internal_links:
             if link not in subpages:
                 if link not in page_store:
-                    page = Page(link)
+                    page = Page(link, self.page.rp)
                     page_store[link] = page
 
                 if page_store[link].html is not None:

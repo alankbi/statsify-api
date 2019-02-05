@@ -96,3 +96,13 @@ def test_get_word_count_from_text():
 
     word_count = helpers.get_word_count_from_text(html.get_text('\n', strip=True))
     assert word_count == 6
+
+
+def test_url_open_mock():
+    mock = helpers.UrlOpenMock('http://test.com')
+    assert mock.text == 'User-agent: *\nAllow: /'
+    assert mock.read() == 'User-agent: *\nAllow: /'.encode()
+
+    mock = helpers.UrlOpenMock('any.url', text='User-agent: *\nDisallow: /')
+    assert mock.text == 'User-agent: *\nDisallow: /'
+    assert mock.read() == 'User-agent: *\nDisallow: /'.encode()

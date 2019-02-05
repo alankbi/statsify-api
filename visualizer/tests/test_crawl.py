@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 from visualizer import crawl
+from visualizer.helpers import UrlOpenMock
+from urllib import request
 import responses
 
 
@@ -71,4 +73,21 @@ def test_get_internal_and_outbound_links():
     assert outbound_links[0] == 'http://outbound.com'
 
 
-# TODO: test robots
+@responses.activate
+def test_get_robots_parser_if_exists():
+    responses.add(responses.HEAD, 'http://test.com/robots.txt', status=200)
+    request.urlopen = lambda url: UrlOpenMock(url, text='User-agent: *\nAllow: /test\nDisallow: /')
+
+    rp = crawl.get_robots_parser_if_exists('http://test.com/')
+    assert rp.can_fetch('*', 'http://test.com/test')
+    assert not rp.can_fetch('*', 'http://test.com')
+    assert not rp.can_fetch('*', 'http://test.com/other')
+
+
+@responses.activate
+def test_get_robots_parser_if_does_not_exist():
+    responses.add(responses.HEAD, 'http://test.com/robots.txt', status=404)
+    request.urlopen = lambda url: UrlOpenMock(url)
+
+    rp = crawl.get_robots_parser_if_exists('http://test.com')
+    assert rp is None

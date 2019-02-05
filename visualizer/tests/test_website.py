@@ -1,5 +1,6 @@
 from visualizer.website import Website
-from visualizer.page import Page, PageNode
+from visualizer.helpers import UrlOpenMock
+from urllib import request
 import responses
 import pytest
 
@@ -94,4 +95,29 @@ def test_website_no_subpages():
     assert '1 2 3' in website.key_phrases
 
 
-# TODO: test robots
+@responses.activate
+def test_website_robot_disallowed():
+    responses.add(responses.GET, 'http://test.com', content_type='text/html', body='<p>hi</p>')
+    responses.add(responses.HEAD, 'http://test.com/robots.txt', status=200)
+    request.urlopen = lambda url: UrlOpenMock(url, text='User-agent: *\nDisallow: /')
+
+    website = Website('http://test.com/', 2)
+    assert website.root.page.html is None
+    assert website.root.subpages is None
+
+
+@responses.activate
+def test_website_some_pages_disallowed():
+    responses.add(responses.GET, 'http://test.com/', content_type='text/html',
+                  body='<a href="/test/"></a><a href="/test/test"></a>')
+    responses.add(responses.GET, 'http://test.com/test/', content_type='text/html', body='<p>hi</p>')
+    responses.add(responses.GET, 'http://test.com/test/test', content_type='text/html', body='<p>hi</p>')
+    responses.add(responses.HEAD, 'http://test.com/robots.txt', status=200)
+
+    request.urlopen = lambda url: UrlOpenMock(url, text='User-agent: *\nAllow: /test/test\nDisallow: /test')
+
+    website = Website('http://test.com/')
+    assert website.root.page.html is not None
+    assert website.root.subpages is not None
+    assert len(website.root.subpages) == 1
+    assert 'http://test.com/test/test' in website.root.subpages

@@ -42,7 +42,7 @@ class Website:
 
 
 def main():
-    website = Website(PageNode(Page('http://alanbi.com'), 3))
+    website = Website('http://alanbi.com', 3)
     print(website.pages)
     print(website.text)
     print(website.total_word_count)

@@ -39,3 +39,15 @@ def get_key_phrases_from_text(text, max_length=None):
 
 def get_word_count_from_text(text):
     return len(text.split())
+
+
+class UrlOpenMock:
+    def __init__(self, url, **kwargs):
+        self.url = url
+        if 'text' in kwargs:
+            self.text = kwargs['text']
+        else:
+            self.text = 'User-agent: *\nAllow: /'
+
+    def read(self):
+        return self.text.encode()

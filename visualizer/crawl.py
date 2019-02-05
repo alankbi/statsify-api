@@ -22,7 +22,10 @@ def get_html(url):
 def get_robots_parser_if_exists(url):
     if not url.startswith('http'):
         url = 'http://' + url
-    url += '/robots.txt'
+    if url.endswith('/'):
+        url += 'robots.txt'
+    else:
+        url += '/robots.txt'
     try:
         r = requests.head(url)
         if r.status_code < 400:
