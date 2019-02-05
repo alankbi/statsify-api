@@ -13,6 +13,15 @@ def test_page_with_bad_url():
 
 
 @responses.activate
+def test_page_text():
+    responses.add(responses.GET, 'http://test.com', content_type='text/html',
+                  body='<p> hi </p><p>  hello  hello  </p><br><p>hey</p>')
+
+    page = Page('http://test.com')
+    assert page.text == 'hi\nhello  hello\nhey'
+
+
+@responses.activate
 def test_page_node_with_no_subpages():
     responses.add(responses.GET, 'http://test.com', content_type='text/html',
                   body='<div class="test"><a href="/test">hi</a></div>')
