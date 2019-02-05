@@ -1,10 +1,12 @@
 from visualizer.page import Page, PageNode
 from visualizer import helpers
+from visualizer import crawl
 
 
 class Website:
-    def __init__(self, root):
-        self.root = root
+    def __init__(self, url, generate_depth=1):
+        rp = crawl.get_robots_parser_if_exists(url)
+        self.root = PageNode(Page(url, rp), generate_depth=generate_depth)
 
         if self.root.page.html is not None:
             self.pages = {self.root.page.url: (self.root.page, 0)}

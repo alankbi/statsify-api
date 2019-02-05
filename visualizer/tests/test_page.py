@@ -61,3 +61,6 @@ def test_page_node_with_subpages_two_deep():
     assert page.subpages is not None
     assert len(page.subpages) == 1
     assert page.subpages[key][0].subpages is None
+
+
+# TODO: test robots

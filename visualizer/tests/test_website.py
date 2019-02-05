@@ -32,9 +32,9 @@ def website():
     responses.add(responses.GET, urls[1], content_type='text/html', body=bodies[1])
     responses.add(responses.GET, urls[2], content_type='text/html', body=bodies[2])
     responses.add(responses.GET, urls[3], content_type='text/html', body=bodies[3])
+    responses.add(responses.HEAD, 'http://test.com/robots.txt', status=404)
 
-    root = PageNode(Page(urls[0]), 3)
-    return Website(root)
+    return Website(urls[0], 3)
 
 
 def test_website_pages(website):
@@ -71,8 +71,9 @@ def test_website_key_phrases(website):
 @responses.activate
 def test_website_root_page_is_none():
     responses.add(responses.GET, 'http://test.com', body='')
+    responses.add(responses.HEAD, 'http://test.com/robots.txt', status=404)
 
-    website = Website(PageNode(Page('http://test.com'), 1))
+    website = Website('http://test.com')
     assert website.root.page.html is None
     assert not hasattr(website, 'pages')
 
@@ -81,8 +82,9 @@ def test_website_root_page_is_none():
 def test_website_no_subpages():
     responses.add(responses.GET, 'http://test.com', content_type='text/html',
                   body='<a href=""></a><a href="/test"></a><a href="http://out.com"></a><p>1 2 3</p>')
+    responses.add(responses.HEAD, 'http://test.com/robots.txt', status=404)
 
-    website = Website(PageNode(Page('http://test.com')))
+    website = Website('http://test.com', 0)
     assert len(website.pages) == 1
     assert 'http://test.com' in website.pages and website.pages['http://test.com'][1] == 0
     assert website.text == '1 2 3\n'
@@ -90,3 +92,6 @@ def test_website_no_subpages():
     assert website.average_word_count == 3
     assert website.outbound_links == {'http://out.com'}
     assert '1 2 3' in website.key_phrases
+
+
+# TODO: test robots

@@ -69,3 +69,6 @@ def test_get_internal_and_outbound_links():
 
     assert len(outbound_links) == 1
     assert outbound_links[0] == 'http://outbound.com'
+
+
+# TODO: test robots

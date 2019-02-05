@@ -3,9 +3,12 @@ from visualizer import helpers
 
 
 class Page:
-    def __init__(self, url):
+    def __init__(self, url, rp=None):
         self.url = url
-        self.html = crawl.get_html(url)
+        if rp is not None and not rp.can_fetch('*', url):
+            self.html = None
+        else:
+            self.html = crawl.get_html(url)
 
         if self.html is not None:
             helpers.strip_scripts_from_html(self.html)
