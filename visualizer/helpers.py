@@ -42,12 +42,9 @@ def get_word_count_from_text(text):
 
 
 class UrlOpenMock:
-    def __init__(self, url, **kwargs):
+    def __init__(self, url, text='User-agent: *\nAllow: /'):
         self.url = url
-        if 'text' in kwargs:
-            self.text = kwargs['text']
-        else:
-            self.text = 'User-agent: *\nAllow: /'
+        self.text = text
 
     def read(self):
         return self.text.encode()
