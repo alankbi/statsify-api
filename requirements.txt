@@ -3,3 +3,5 @@ pytest
 requests
 responses
 rake-nltk
+flask
+flask-restful
