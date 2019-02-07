@@ -44,10 +44,10 @@ def test_website_pages(website):
 
     assert len(website.pages) == 4
     print(website.pages)
-    assert urls[0] in website.pages and website.pages[urls[0]][1] == 2
-    assert urls[1] in website.pages and website.pages[urls[1]][1] == 4
-    assert urls[2] in website.pages and website.pages[urls[2]][1] == 2
-    assert urls[3] in website.pages and website.pages[urls[3]][1] == 1
+    assert urls[0] in website.pages and website.pages[urls[0]]['freq'] == 2
+    assert urls[1] in website.pages and website.pages[urls[1]]['freq'] == 4
+    assert urls[2] in website.pages and website.pages[urls[2]]['freq'] == 2
+    assert urls[3] in website.pages and website.pages[urls[3]]['freq'] == 1
 
 
 def test_website_text(website):
@@ -87,7 +87,7 @@ def test_website_no_subpages():
 
     website = Website('http://test.com', 0)
     assert len(website.pages) == 1
-    assert 'http://test.com' in website.pages and website.pages['http://test.com'][1] == 0
+    assert 'http://test.com' in website.pages and website.pages['http://test.com']['freq'] == 0
     assert website.text == '1 2 3\n'
     assert website.total_word_count == 3
     assert website.average_word_count == 3

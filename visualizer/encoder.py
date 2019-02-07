@@ -21,7 +21,7 @@ class CustomEncoder(json.JSONEncoder):
                 'average_word_count': obj.average_word_count,
                 'outbound_links': obj.outbound_links,
                 'key_phrases': obj.key_phrases,
-                'root_page': obj.root
+                'root_page_node': obj.root
 
             }
         elif isinstance(obj, PageNode):

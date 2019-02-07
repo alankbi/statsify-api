@@ -44,7 +44,7 @@ class PageNode:
                 if page_node.page.url not in finished:
                     page_node.subpages = page_node.generate_subpages(page_store)
                     finished.add(page_node.page.url)
-                    next_pages.extend(page_node.subpages[link][0] for link in page_node.subpages.keys())
+                    next_pages.extend(page_node.subpages[link]['page_node'] for link in page_node.subpages.keys())
                 else:
                     page_node.subpages = None
 
@@ -61,10 +61,10 @@ class PageNode:
 
                 if page_store[link].html is not None:
                     subpage = PageNode(page_store[link], page_store=page_store)
-                    subpages[link] = (subpage, 1)
+                    subpages[link] = {'page_node': subpage, 'freq': 1}
 
             else:
-                subpages[link] = (subpages[link][0], subpages[link][1] + 1)
+                subpages[link]['freq'] += 1
 
         return subpages
 

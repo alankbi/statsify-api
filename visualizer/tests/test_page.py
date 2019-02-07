@@ -71,10 +71,10 @@ def test_page_node_with_subpages():
     page = PageNode(Page('http://test.com'), 1)
     assert page.subpages is not None
     assert len(page.subpages) == 2
-    assert page.subpages['http://test.com'][1] == 1
-    assert page.subpages['http://test.com/test'][1] == 2
-    assert page.subpages['http://test.com'][0].subpages is None
-    assert page.subpages['http://test.com/test'][0].subpages is None
+    assert page.subpages['http://test.com']['freq'] == 1
+    assert page.subpages['http://test.com/test']['freq'] == 2
+    assert page.subpages['http://test.com']['page_node'].subpages is None
+    assert page.subpages['http://test.com/test']['page_node'].subpages is None
 
 
 @responses.activate
@@ -86,4 +86,4 @@ def test_page_node_with_subpages_two_deep():
     key = 'http://test.com/test'
     assert page.subpages is not None
     assert len(page.subpages) == 1
-    assert page.subpages[key][0].subpages is None
+    assert page.subpages[key]['page_node'].subpages is None

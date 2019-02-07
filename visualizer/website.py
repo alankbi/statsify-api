@@ -9,7 +9,7 @@ class Website:
         self.root = PageNode(Page(url, rp), generate_depth=generate_depth)
 
         if self.root.page.html is not None:
-            self.pages = {self.root.page.url: (self.root.page, 0)}
+            self.pages = {self.root.page.url: {'page': self.root.page, 'freq': 0}}
             self.text = ''
             self.total_word_count = 0
 
@@ -34,11 +34,13 @@ class Website:
             if page_node.subpages is not None:
                 for link in page_node.subpages:
                     if link in self.pages:
-                        self.pages[link] = (self.pages[link][0],
-                                            self.pages[link][1] + page_node.subpages[link][1])
+                        self.pages[link]['freq'] += page_node.subpages[link]['freq']
                     else:
-                        self.pages[link] = (page_node.subpages[link][0].page, page_node.subpages[link][1])
-                        remaining_pages.append(page_node.subpages[link][0])
+                        self.pages[link] = {
+                            'page': page_node.subpages[link]['page_node'].page,
+                            'freq': page_node.subpages[link]['freq']
+                        }
+                        remaining_pages.append(page_node.subpages[link]['page_node'])
 
 
 def main():
