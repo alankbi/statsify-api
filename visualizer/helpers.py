@@ -51,4 +51,5 @@ class UrlOpenMock:
 
 
 ERROR_MESSAGES = ['Robots are restricted from accessing this page.',
-                  'An error occurred when trying to reach this url.']
+                  'An error occurred when trying to reach this url.',
+                  'Please specify a url.']

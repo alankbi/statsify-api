@@ -13,7 +13,7 @@ def get_html(url):
     except RequestException:
         return None
 
-    if 'text/html' in result.headers['content-type']:
+    if 'text/html' in result.headers['content-type'] and result.status_code < 400:
         return BeautifulSoup(result.content, 'html.parser')
     else:
         return None
@@ -28,7 +28,7 @@ def get_robots_parser_if_exists(url):
         url += '/robots.txt'
     try:
         r = requests.head(url)
-        if r.status_code < 400:
+        if r.status_code < 300:
             rp = RobotFileParser()
             rp.set_url(url)
             rp.read()

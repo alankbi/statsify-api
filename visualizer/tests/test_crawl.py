@@ -26,6 +26,11 @@ def test_get_html_failure():
     html = crawl.get_html('http://badurl.com')
     assert html is None
 
+    responses.add(responses.GET, 'http://test.com', status=404, content_type='text/html', body='<p>404</p>')
+
+    html = crawl.get_html('http://test.com')
+    assert html is None
+
 
 def test_get_all_links():
     html = BeautifulSoup('<a href="/test">hi</a><a class="no-href">hi</a>', 'html.parser')
