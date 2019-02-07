@@ -1,5 +1,5 @@
 from visualizer.page import Page, PageNode
-from visualizer.helpers import UrlOpenMock
+from visualizer import helpers
 from visualizer import crawl
 from urllib import request
 import responses
@@ -13,6 +13,8 @@ def test_page_with_bad_url():
 
     page = Page('http://badurl.com')
     assert page.html is None
+    assert hasattr(page, 'error')
+    assert page.error == helpers.ERROR_MESSAGES[1]
 
 
 @responses.activate
@@ -29,12 +31,14 @@ def test_page_disallowed():
     responses.add(responses.GET, 'http://test.com/test', content_type='text/html', body='<p>hi</p>')
     responses.add(responses.HEAD, 'http://test.com/robots.txt', status=200)
 
-    request.urlopen = lambda url: UrlOpenMock(url, text='User-agent: *\nAllow: /test/test\nDisallow: /test')
+    request.urlopen = lambda url: helpers.UrlOpenMock(url, text='User-agent: *\nAllow: /test/test\nDisallow: /test')
     rp = crawl.get_robots_parser_if_exists('http://test.com')
 
     page = Page('http://test.com/test', rp)
     assert page.rp is rp
     assert page.html is None
+    assert hasattr(page, 'error')
+    assert page.error == helpers.ERROR_MESSAGES[0]
 
 
 @responses.activate

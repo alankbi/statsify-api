@@ -8,7 +8,9 @@ class Website:
         rp = crawl.get_robots_parser_if_exists(url)
         self.root = PageNode(Page(url, rp), generate_depth=generate_depth)
 
-        if self.root.page.html is not None:
+        if self.root.page.html is None:
+            self.error = self.root.page.error
+        else:
             self.pages = {self.root.page.url: {'page': self.root.page, 'freq': 0}}
             self.text = ''
             self.total_word_count = 0

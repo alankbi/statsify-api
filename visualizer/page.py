@@ -8,10 +8,14 @@ class Page:
         self.rp = rp
         if rp is not None and not rp.can_fetch('*', url):
             self.html = None
-        else:
-            self.html = crawl.get_html(url)
+            self.error = helpers.ERROR_MESSAGES[0]
+            return
 
-        if self.html is not None:
+        self.html = crawl.get_html(url)
+
+        if self.html is None:
+            self.error = helpers.ERROR_MESSAGES[1]
+        else:
             helpers.strip_scripts_from_html(self.html)
             self.text = self.html.get_text('\n', strip=True)
             self.key_phrases = helpers.get_key_phrases_from_text(self.text, max_length=3)
@@ -21,8 +25,6 @@ class Page:
             self.internal_links, self.outbound_links = crawl.get_internal_and_outbound_links(self.html, url)
 
     def __str__(self):
-        if self.html is None:
-            return ''
         return self.url
 
 

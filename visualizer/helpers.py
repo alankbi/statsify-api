@@ -48,3 +48,7 @@ class UrlOpenMock:
 
     def read(self):
         return self.text.encode()
+
+
+ERROR_MESSAGES = ['Robots are restricted from accessing this page.',
+                  'An error occurred when trying to reach this url.']
