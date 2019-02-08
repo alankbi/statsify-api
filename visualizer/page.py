@@ -1,14 +1,27 @@
+from bs4 import BeautifulSoup
+
 from visualizer import crawl
 from visualizer import helpers
 
 
 class Page:
-    def __init__(self, url, rp=None):
+    def __init__(self, url, rp=None, is_other_page=False):
         self.url = url
         self.rp = rp
         if rp is not None and not rp.can_fetch('*', url):
             self.html = None
             self.error = helpers.ERROR_MESSAGES[0]
+            return
+
+        if is_other_page:  # to represent all pages that weren't requested due to limits
+            self.url = '*'
+            self.rp = rp
+            self.html = BeautifulSoup(features='html.parser')  # features set to ignore warning
+            self.text = 'Other pages (not requested due to limits)'
+            self.key_phrases = []
+            self.word_count = 0
+            self.internal_links = []
+            self.outbound_links = []
             return
 
         self.html = crawl.get_html(url)
@@ -29,7 +42,7 @@ class Page:
 
 
 class PageNode:
-    def __init__(self, page, generate_depth=0, page_store={}):
+    def __init__(self, page, generate_depth=0, page_store={'*': Page('', is_other_page=True)}):
         self.page = page
         if generate_depth <= 0 or self.page.html is None:
             self.subpages = None
@@ -58,8 +71,11 @@ class PageNode:
         for link in self.page.internal_links:
             if link not in subpages:
                 if link not in page_store:
-                    page = Page(link, self.page.rp)
-                    page_store[link] = page
+                    if len(page_store) > 100:  # Stop after 100 url requests (prevent from taking too long)
+                        link = '*'  # Set page to default 'other' page
+                    else:
+                        page = Page(link, self.page.rp)
+                        page_store[link] = page
 
                 if page_store[link].html is not None:
                     subpage = PageNode(page_store[link], page_store=page_store)
