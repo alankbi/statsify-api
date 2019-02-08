@@ -1,4 +1,5 @@
 import flask
+import os
 
 from flask import request, jsonify, make_response
 from flask_limiter import Limiter
@@ -16,8 +17,6 @@ app.json_encoder = CustomEncoder
 limiter = Limiter(app, key_func=get_remote_address)
 dashboard.bind(app)
 dashboard.config.init_from(file='./config.cfg')
-
-app.config['DEBUG'] = True
 
 
 @app.route('/', methods=['GET'])
@@ -65,4 +64,5 @@ def rate_limit_handler(e):
     return make_response(jsonify({'error': ERROR_MESSAGES[3] + e.description}))
 
 
-app.run()
+port = int(os.environ.get('PORT', 5000))
+app.run(host='0.0.0.0', port=port)
