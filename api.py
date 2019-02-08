@@ -3,6 +3,7 @@ import flask
 from flask import request, jsonify, make_response
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import flask_monitoringdashboard as dashboard
 
 from visualizer import crawl
 from visualizer.page import Page
@@ -11,9 +12,12 @@ from visualizer.website import Website
 from visualizer.encoder import CustomEncoder
 
 app = flask.Flask(__name__)
-app.config['DEBUG'] = True
 app.json_encoder = CustomEncoder
 limiter = Limiter(app, key_func=get_remote_address)
+dashboard.bind(app)
+dashboard.config.init_from(file='./config.cfg')
+
+app.config['DEBUG'] = True
 
 
 @app.route('/', methods=['GET'])

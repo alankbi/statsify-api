@@ -6,3 +6,4 @@ rake-nltk
 flask
 flask-restful
 Flask-Limiter
+flask_monitoringdashboard
