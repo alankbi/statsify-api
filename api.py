@@ -41,7 +41,7 @@ def api_page():
 
 
 @app.route('/website', methods=['GET'])
-@limiter.limit("1/day")
+@limiter.limit("20/day")
 def api_website():
     if 'url' not in request.args:
         return jsonify({'error': ERROR_MESSAGES[2]})
