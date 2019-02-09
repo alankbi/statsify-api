@@ -1,7 +1,7 @@
 import flask
 import os
 
-from flask import request, jsonify, make_response
+from flask import request, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import flask_monitoringdashboard as dashboard
@@ -14,6 +14,7 @@ from visualizer.encoder import CustomEncoder
 
 app = flask.Flask(__name__)
 app.json_encoder = CustomEncoder
+app.config['PROPAGATE_EXCEPTIONS'] = True
 limiter = Limiter(app, key_func=get_remote_address)
 dashboard.config.init_from(file='./config.cfg')
 dashboard.bind(app)
@@ -59,9 +60,19 @@ def api_website():
     return jsonify({'data': website})
 
 
+@app.errorhandler(404)
+def page_not_found_handler(e):
+    return jsonify({'error': e.description}), 404
+
+
 @app.errorhandler(429)
 def rate_limit_handler(e):
-    return make_response(jsonify({'error': ERROR_MESSAGES[3] + e.description}))
+    return jsonify({'error': ERROR_MESSAGES[3] + e.description}), 429
+
+
+@app.errorhandler(Exception)
+def internal_error_handler(e):
+    return jsonify({'error': ERROR_MESSAGES[4]}), 500
 
 
 if __name__ == '__main__':

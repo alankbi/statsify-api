@@ -50,7 +50,8 @@ class UrlOpenMock:
         return self.text.encode()
 
 
-ERROR_MESSAGES = ['Robots are restricted from accessing this page.',
-                  'An error occurred when trying to reach this url.',
-                  'Please specify a url.',
-                  'Rate limit exceeded. ']
+ERROR_MESSAGES = ['Robots are restricted from accessing this page. ',
+                  'An error occurred when trying to reach this url. ',
+                  'Please specify a url. ',
+                  'Rate limit exceeded. ',
+                  'An internal server error occurred. Please try again later. ']
