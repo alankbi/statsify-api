@@ -15,8 +15,8 @@ from visualizer.encoder import CustomEncoder
 app = flask.Flask(__name__)
 app.json_encoder = CustomEncoder
 limiter = Limiter(app, key_func=get_remote_address)
-dashboard.bind(app)
 dashboard.config.init_from(file='./config.cfg')
+dashboard.bind(app)
 
 
 @app.route('/', methods=['GET'])

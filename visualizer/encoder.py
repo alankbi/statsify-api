@@ -1,6 +1,6 @@
 from visualizer.page import Page, PageNode
 from visualizer.website import Website
-import json
+from flask import json
 
 
 class CustomEncoder(json.JSONEncoder):
