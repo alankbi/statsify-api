@@ -8,4 +8,5 @@ flask
 flask-restful
 Flask-Limiter
 flask_monitoringdashboard
+gunicorn
 psycopg2
