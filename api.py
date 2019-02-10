@@ -38,7 +38,9 @@ def api_page():
     if page.html is None:
         return jsonify({'error': page.error})
 
-    return jsonify({'data': page})
+    response = jsonify({'data': page})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.route('/website', methods=['GET'])
@@ -57,7 +59,9 @@ def api_website():
     if website.root.page.html is None:
         return jsonify({'error': website.root.page.error})
 
-    return jsonify({'data': website})
+    response = jsonify({'data': website})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.errorhandler(404)
