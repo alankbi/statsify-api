@@ -59,6 +59,10 @@ def test_relative_to_absolute_url():
     assert helpers.relative_to_absolute_url('page', domain) == 'http://test.com/page'
     assert helpers.relative_to_absolute_url('/page/', domain) == 'http://test.com/page/'
 
+    domain = 'test.com'
+
+    assert helpers.relative_to_absolute_url('page', domain) == 'http://test.com/page'
+
 
 def test_relative_to_absolute_url_from_subfolder():
     url = 'http://test.com/page1/'

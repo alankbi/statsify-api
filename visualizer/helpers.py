@@ -16,6 +16,8 @@ def is_outbound_url(url, domain):
 
 
 def relative_to_absolute_url(url, current_url):
+    if not current_url.startswith('http'):
+        current_url = 'http://' + current_url
     return urljoin(current_url, url)
 
 
