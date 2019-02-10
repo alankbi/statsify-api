@@ -70,17 +70,18 @@ def test_website_encoder():
         'average_word_count': 1.0,
         'outbound_links': [],
         'key_phrases': ['Hi'],
-        'root_page_node': {
-            'page': page,
-            'subpages': {
-                'http://test2.com': {
-                    'page_node': {'page': page, 'subpages': None},
-                    'freq': 1,
-                }
-            },
-        }
+        # 'root_page_node': {
+        #     'page': page,
+        #     'subpages': {
+        #         'http://test2.com': {
+        #             'page_node': {'page': page, 'subpages': None},
+        #             'freq': 1,
+        #         }
+        #     },
+        # }
     }
     assert result == json.dumps(expected)
+
 
 test_page_encoder()
 test_website_encoder()
