@@ -17,7 +17,7 @@ class Page:
             self.url = '*'
             self.rp = rp
             self.html = BeautifulSoup(features='html.parser')  # features set to ignore warning
-            self.text = 'Other pages (not requested due to limits)'
+            self.text = ''
             self.key_phrases = []
             self.word_count = 0
             self.internal_links = []
@@ -51,7 +51,7 @@ class PageNode:
             self.generate_all_subpages(generate_depth, page_store)
 
     def generate_all_subpages(self, generate_depth, page_store):
-        finished = set()    # tracks if this page's subpages have already been generated previously
+        finished = set('*')    # tracks if this page's subpages have already been generated previously
         pages = [self]
         next_pages = []     # all pages at the next depth to generate next
         for i in range(generate_depth):
@@ -72,7 +72,14 @@ class PageNode:
             if link not in subpages:
                 if link not in page_store:
                     if len(page_store) > 100:  # Stop after 100 url requests (prevent from taking too long)
-                        link = '*'  # Set page to default 'other' page
+                        if '*' not in subpages:
+                            subpages['*'] = {
+                                'page_node': PageNode(page_store['*'], page_store=page_store),
+                                'freq': 0
+                            }
+                        subpages['*']['freq'] += 1
+                        continue
+
                     else:
                         page = Page(link, self.page.rp)
                         page_store[link] = page

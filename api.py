@@ -66,17 +66,23 @@ def api_website():
 
 @app.errorhandler(404)
 def page_not_found_handler(e):
-    return jsonify({'error': e.description}), 404
+    response = jsonify({'error': e.description}), 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.errorhandler(429)
 def rate_limit_handler(e):
-    return jsonify({'error': ERROR_MESSAGES[3] + e.description}), 429
+    response = jsonify({'error': ERROR_MESSAGES[3] + e.description}), 429
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.errorhandler(Exception)
 def internal_error_handler(e):
-    return jsonify({'error': ERROR_MESSAGES[4]}), 500
+    response = jsonify({'error': ERROR_MESSAGES[4]}), 500
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 if __name__ == '__main__':
