@@ -36,7 +36,9 @@ def api_page():
     page = Page(request.args['url'], rp)
 
     if page.html is None:
-        return jsonify({'error': page.error})
+        response = jsonify({'error': page.error})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
 
     response = jsonify({'data': page})
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -66,23 +68,23 @@ def api_website():
 
 @app.errorhandler(404)
 def page_not_found_handler(e):
-    response = jsonify({'error': e.description}), 404
+    response = jsonify({'error': e.description})
     response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return response, 404
 
 
 @app.errorhandler(429)
 def rate_limit_handler(e):
-    response = jsonify({'error': ERROR_MESSAGES[3] + e.description}), 429
+    response = jsonify({'error': ERROR_MESSAGES[3] + e.description})
     response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return response, 429
 
 
 @app.errorhandler(Exception)
 def internal_error_handler(e):
-    response = jsonify({'error': ERROR_MESSAGES[4]}), 500
+    response = jsonify({'error': ERROR_MESSAGES[4]})
     response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return response, 500
 
 
 if __name__ == '__main__':
