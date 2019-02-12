@@ -19,7 +19,10 @@ class Website:
 
             self.traverse_all_pages()
 
-            self.average_word_count = self.total_word_count / len(self.pages)
+            divisor = len(self.pages)
+            if '*' in self.pages:
+                divisor -= 1
+            self.average_word_count = self.total_word_count / divisor
             self.key_phrases = helpers.get_key_phrases_from_text(self.text, max_length=3)
 
     def traverse_all_pages(self):
