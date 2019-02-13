@@ -29,7 +29,9 @@ def home():
 @limiter.limit("1000/day")
 def api_page():
     if 'url' not in request.args:
-        return jsonify({'error': ERROR_MESSAGES[2]})
+        response = jsonify({'error': ERROR_MESSAGES[2]})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
 
     rp = crawl.get_robots_parser_if_exists(request.args['url'])
 
@@ -49,7 +51,9 @@ def api_page():
 @limiter.limit("200/day")
 def api_website():
     if 'url' not in request.args:
-        return jsonify({'error': ERROR_MESSAGES[2]})
+        response = jsonify({'error': ERROR_MESSAGES[2]})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
 
     if 'depth' in request.args:
         depth = max(min(int(request.args['depth']), 8), 0)  # 0 <= depth <= 8
@@ -59,7 +63,9 @@ def api_website():
     website = Website(request.args['url'], depth)
 
     if website.root.page.html is None:
-        return jsonify({'error': website.root.page.error})
+        response = jsonify({'error': website.root.page.error})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
 
     response = jsonify({'data': website})
     response.headers.add('Access-Control-Allow-Origin', '*')
