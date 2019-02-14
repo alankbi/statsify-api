@@ -91,3 +91,24 @@ def test_page_node_with_subpages_two_deep():
     assert page.subpages is not None
     assert len(page.subpages) == 1
     assert page.subpages[key]['page_node'].subpages is None
+
+
+@responses.activate
+def test_can_fetch():
+    responses.add(responses.GET, 'http://test.com', content_type='text/html', body='<p>hi</p>')
+    responses.add(responses.HEAD, 'http://test.com/robots.txt', status=200)
+
+    request.urlopen = lambda url: helpers.UrlOpenMock(url, text='User-agent: *\nDisallow: /')
+    rp = crawl.get_robots_parser_if_exists('http://test.com')
+
+    page = Page('http://test.com', rp)
+    assert page.rp is rp
+    assert page.html is None
+    assert hasattr(page, 'error')
+    assert page.error == helpers.ERROR_MESSAGES[0]
+
+    page = Page('test.com', rp)
+    assert page.rp is rp
+    assert page.html is None
+    assert hasattr(page, 'error')
+    assert page.error == helpers.ERROR_MESSAGES[0]

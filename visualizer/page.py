@@ -8,7 +8,7 @@ class Page:
     def __init__(self, url, rp=None, is_other_page=False):
         self.url = url
         self.rp = rp
-        if rp is not None and not rp.can_fetch('*', url):
+        if rp is not None and not self.can_fetch():
             self.html = None
             self.error = helpers.ERROR_MESSAGES[0]
             return
@@ -36,6 +36,12 @@ class Page:
             self.word_count = helpers.get_word_count_from_text(self.text)
 
             self.internal_links, self.outbound_links = crawl.get_internal_and_outbound_links(self.html, url)
+
+    def can_fetch(self):
+        if self.url.startswith('http'):
+            return self.rp.can_fetch('*', self.url)
+        else:
+            return self.rp.can_fetch('*', 'http://' + self.url)
 
     def __str__(self):
         return self.url
