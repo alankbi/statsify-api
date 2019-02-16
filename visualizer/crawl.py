@@ -1,5 +1,6 @@
 import requests
 from requests.exceptions import RequestException
+from urllib.parse import urlparse
 from urllib.robotparser import RobotFileParser
 from bs4 import BeautifulSoup
 from visualizer import helpers
@@ -22,13 +23,13 @@ def get_html(url):
 def get_robots_parser_if_exists(url):
     if not url.startswith('http'):
         url = 'http://' + url
-    if url.endswith('/'):
-        url += 'robots.txt'
-    else:
-        url += '/robots.txt'
+
+    parsed_url = urlparse(url)
+    robot_path = '{url.scheme}://{url.netloc}/robots.txt'.format(url=parsed_url)
+
     try:
-        r = requests.head(url)
-        if r.status_code < 300:
+        r = requests.head(robot_path)
+        if r.status_code < 400:
             rp = RobotFileParser()
             rp.set_url(url)
             rp.read()

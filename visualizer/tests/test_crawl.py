@@ -96,3 +96,15 @@ def test_get_robots_parser_if_does_not_exist():
 
     rp = crawl.get_robots_parser_if_exists('http://test.com')
     assert rp is None
+
+
+@responses.activate
+def test_get_robots_parser_not_from_root():
+    responses.add(responses.HEAD, 'http://test.com/robots.txt', status=200)
+    request.urlopen = lambda url: UrlOpenMock(url)
+
+    rp = crawl.get_robots_parser_if_exists('http://test.com/test')
+    assert rp is not None
+
+    rp = crawl.get_robots_parser_if_exists('test.com/test/test1')
+    assert rp is not None
