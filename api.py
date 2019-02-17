@@ -1,7 +1,7 @@
 import flask
 import os
 
-from flask import request, jsonify
+from flask import request, jsonify, send_from_directory
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import flask_monitoringdashboard as dashboard
@@ -22,7 +22,17 @@ dashboard.bind(app)
 
 @app.route('/', methods=['GET'])
 def home():
-    return '<h1>REST API</p>'
+    return '<html>' \
+            '<head><link rel="shortcut icon" href="/favicon.ico"></head>' \
+            '<body><a href="https://www.statsify.us"><h1 style="text-align: center; ' \
+            'font-size: large; margin-top: 20px;">Statsify Home Page</h1></a></body>' \
+            '</html>'
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static', 'images'),
+                               'favicon.ico', mimetype='image/png')
 
 
 @app.route('/page', methods=['GET'])

@@ -1,5 +1,6 @@
-from bs4 import BeautifulSoup
+import time
 
+from bs4 import BeautifulSoup
 from visualizer import crawl
 from visualizer import helpers
 
@@ -48,22 +49,25 @@ class Page:
 
 
 class PageNode:
-    def __init__(self, page, generate_depth=0, page_store={'*': Page('', is_other_page=True)}):
+    def __init__(self, page, generate_depth=0, page_store=None):
         self.page = page
         if generate_depth <= 0 or self.page.html is None:
             self.subpages = None
         else:
+            if page_store is None:
+                page_store = {'*': Page('', is_other_page=True)}
             page_store[page.url] = page
             self.generate_all_subpages(generate_depth, page_store)
 
     def generate_all_subpages(self, generate_depth, page_store):
+        start_time = time.time()
         finished = set('*')    # tracks if this page's subpages have already been generated previously
         pages = [self]
         next_pages = []     # all pages at the next depth to generate next
         for i in range(generate_depth):
             for page_node in pages:
                 if page_node.page.url not in finished:
-                    page_node.subpages = page_node.generate_subpages(page_store)
+                    page_node.subpages = page_node.generate_subpages(page_store, start_time)
                     finished.add(page_node.page.url)
                     next_pages.extend(page_node.subpages[link]['page_node'] for link in page_node.subpages.keys())
                 else:
@@ -72,12 +76,13 @@ class PageNode:
             pages = next_pages
             next_pages = []
 
-    def generate_subpages(self, page_store):
+    def generate_subpages(self, page_store, start_time):
         subpages = {}
         for link in self.page.internal_links:
             if link not in subpages:
                 if link not in page_store:
-                    if len(page_store) > 100:  # Stop after 100 url requests (prevent from taking too long)
+                    # Stop after 100 requests or 25 seconds to prevent from taking too long
+                    if time.time() - start_time > 25 or len(page_store) > 100:
                         if '*' not in subpages:
                             subpages['*'] = {
                                 'page_node': PageNode(page_store['*'], page_store=page_store),

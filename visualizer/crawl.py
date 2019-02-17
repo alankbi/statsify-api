@@ -29,7 +29,7 @@ def get_robots_parser_if_exists(url):
 
     try:
         r = requests.head(robot_path)
-        if r.status_code < 400:
+        if r.status_code < 300:
             rp = RobotFileParser()
             rp.set_url(robot_path)
             rp.read()
