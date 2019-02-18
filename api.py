@@ -17,6 +17,16 @@ app.json_encoder = CustomEncoder
 app.config['PROPAGATE_EXCEPTIONS'] = True
 limiter = Limiter(app, key_func=get_remote_address)
 dashboard.config.init_from(file='./config.cfg')
+
+
+def group_by_origin():
+    if 'source' in request.args:
+        return request.args['source']
+    else:
+        return 'api'
+
+
+dashboard.config.group_by = group_by_origin
 dashboard.bind(app)
 
 
