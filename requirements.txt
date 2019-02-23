@@ -10,4 +10,3 @@ Flask-Limiter
 flask_monitoringdashboard
 gunicorn
 psycopg2
-newrelic
