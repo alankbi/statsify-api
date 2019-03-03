@@ -16,6 +16,33 @@ app = flask.Flask(__name__)
 app.json_encoder = CustomEncoder
 app.config['PROPAGATE_EXCEPTIONS'] = True
 limiter = Limiter(app, key_func=get_remote_address)
+
+
+def create_config_file():
+    lines = ['[dashboard]',
+             'APP_VERSION=1.0',
+             '',
+             '[authentication]',
+             'USERNAME=admin',
+             'PASSWORD=' + os.environ.get('STATSIFY_DASHBOARD_PASSWORD', 'admin'),
+             '',
+             '[visualization]',
+             'TIMEZONE=America/Los_Angeles',
+             '']
+
+    db_path = os.environ.get('STATSIFY_DB_URL')
+    if db_path is not None:
+        lines.extend(['[database]',
+                      'DATABASE=' + db_path])
+
+    for i in range(len(lines)):
+        lines[i] += '\n'
+
+    f = open('config.cfg', 'w')
+    f.writelines(lines)
+
+
+create_config_file()
 dashboard.config.init_from(file='./config.cfg')
 
 
