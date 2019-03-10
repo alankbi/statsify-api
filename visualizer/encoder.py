@@ -6,6 +6,16 @@ from flask import json
 
 class CustomEncoder(json.JSONEncoder):
     def default(self, obj):
+        """
+        Custom encoding for the Page, Website, and other associated classes
+        to allow them to be returned as JSON objects through the API.
+
+        :param obj: object to be encoded
+        :type obj: object
+        :return: object in json format
+        :rtype: object
+        """
+
         if isinstance(obj, Page):
             if obj.html is None:
                 return {'error': obj.error}

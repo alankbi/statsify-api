@@ -87,10 +87,10 @@ def api_page():
     """
     API endpoint for requesting page data. https://www.statsify.us/api
 
-    :param url: The url to gather data from.
+    :param url: the url to gather data from.
     :type url: str
-    :return: If a successful request is made, the data will be returned in
-        a JSON object under the 'data' key. Otherwise, a JSON object
+    :return: if a successful request is made, the data will be returned in
+        a JSON object under the 'data' key; otherwise, a JSON object
         with an 'error' key will be returned.
     :rtype: object
     """
@@ -120,12 +120,12 @@ def api_website():
     """
     API endpoint for requesting website data. https://www.statsify.us/api
 
-    :param url: The url to gather data from.
+    :param url: the url to gather data from.
     :type url: str
-    :param depth: The maximum recursive depth to follow internal links.
+    :param depth: the maximum recursive depth to follow internal links.
     :type depth: int
-    :return: If a successful request is made, the data will be returned in
-        a JSON object under the 'data' key. Otherwise, a JSON object
+    :return: if a successful request is made, the data will be returned in
+        a JSON object under the 'data' key; otherwise, a JSON object
         with an 'error' key will be returned.
     :rtype: object
     """

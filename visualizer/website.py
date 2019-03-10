@@ -5,6 +5,18 @@ from visualizer import crawl
 
 class Website:
     def __init__(self, url, generate_depth=1):
+        """
+        Creates a Website object to represent the contents of multiple pages within
+        a website. If the given url is valid and able to be requested, self.pages,
+        self.text, and other instance variables will contain various statistics about
+        the website; otherwise, self.error describes what went wrong.
+
+        :param url: the url of the website.
+        :type url: str
+        :param generate_depth: the maximum recursive depth to crawl through the website.
+        :type generate_depth: int
+        """
+
         rp = crawl.get_robots_parser_if_exists(url)
         self.root = PageNode(Page(url, rp), generate_depth=generate_depth)
 
@@ -26,6 +38,7 @@ class Website:
             self.key_phrases = helpers.get_key_phrases_from_text(self.text, max_length=3)
 
     def traverse_all_pages(self):
+        """Tally up statistics from every unique page within this website."""
         remaining_pages = [self.root]
 
         while remaining_pages:
