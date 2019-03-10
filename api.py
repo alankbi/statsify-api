@@ -19,6 +19,8 @@ limiter = Limiter(app, key_func=get_remote_address)
 
 
 def create_config_file():
+    """Creates a config file for the API monitoring dashboard."""
+
     lines = ['[dashboard]',
              'APP_VERSION=1.0',
              '',
@@ -46,7 +48,10 @@ create_config_file()
 dashboard.config.init_from(file='./config.cfg')
 
 
+# Does not seem to have any effect in the monitoring dashboard
 def group_by_origin():
+    """Group incoming requests by source: website, extension, or API."""
+
     if 'source' in request.args:
         return request.args['source']
     else:
@@ -59,15 +64,19 @@ dashboard.bind(app)
 
 @app.route('/', methods=['GET'])
 def home():
+    """Returns an html page with a link to https://www.statsify.us."""
+
     return '<html>' \
-            '<head><link rel="shortcut icon" href="/favicon.ico"></head>' \
-            '<body><a href="https://www.statsify.us"><h1 style="text-align: center; ' \
-            'font-size: large; margin-top: 20px;">Statsify Home Page</h1></a></body>' \
-            '</html>'
+           '<head><link rel="shortcut icon" href="/favicon.ico"></head>' \
+           '<body><a href="https://www.statsify.us"><h1 style="text-align: center; ' \
+           'font-size: large; margin-top: 20px;">Statsify Home Page</h1></a></body>' \
+           '</html>'
 
 
 @app.route('/favicon.ico')
 def favicon():
+    """Returns the favicon used by the home page."""
+
     return send_from_directory(os.path.join(app.root_path, 'static', 'images'),
                                'favicon.ico', mimetype='image/png')
 
@@ -75,6 +84,22 @@ def favicon():
 @app.route('/page', methods=['GET'])
 @limiter.limit("1000/day")
 def api_page():
+    """
+    API endpoint for requesting page data. https://www.statsify.us/api
+
+    URL Parameters:
+    ---------------
+    url : str
+        The url to gather data from.
+
+    Returns:
+    --------
+    JSON Object
+        If a successful request is made, the data will be returned in
+        a JSON object under the 'data' key. Otherwise, a JSON object
+        with an 'error' key will be returned.
+    """
+
     if 'url' not in request.args:
         response = jsonify({'error': ERROR_MESSAGES[2]})
         response.headers.add('Access-Control-Allow-Origin', '*')
@@ -97,6 +122,24 @@ def api_page():
 @app.route('/website', methods=['GET'])
 @limiter.limit("200/day")
 def api_website():
+    """
+    API endpoint for requesting website data. https://www.statsify.us/api
+
+    URL Parameters:
+    ---------------
+    url : str
+        The url to gather data from.
+    depth : int
+        The maximum recursive depth to follow internal links.
+
+    Returns:
+    --------
+    JSON Object
+        If a successful request is made, the data will be returned in
+        a JSON object under the 'data' key. Otherwise, a JSON object
+        with an 'error' key will be returned.
+    """
+
     if 'url' not in request.args:
         response = jsonify({'error': ERROR_MESSAGES[2]})
         response.headers.add('Access-Control-Allow-Origin', '*')
@@ -121,6 +164,8 @@ def api_website():
 
 @app.errorhandler(404)
 def page_not_found_handler(e):
+    """JSON response for a 404 error."""
+
     response = jsonify({'error': e.description})
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response, 404
@@ -128,6 +173,8 @@ def page_not_found_handler(e):
 
 @app.errorhandler(429)
 def rate_limit_handler(e):
+    """JSON response for exceeding the rate limit."""
+
     response = jsonify({'error': ERROR_MESSAGES[3] + e.description})
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response, 429
@@ -135,6 +182,8 @@ def rate_limit_handler(e):
 
 @app.errorhandler(Exception)
 def internal_error_handler(e):
+    """JSON response that attempts to catch all other errors."""
+
     response = jsonify({'error': ERROR_MESSAGES[4]})
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response, 500
